@@ -1,0 +1,46 @@
+{% extends 'authentication/base.html' %}
+{% block links %}
+    {% if isAdmin %}
+    {% include 'admin/navLinks.html' %}
+    {% else %}
+    {% include 'user/navLinks.html' %}
+    {% endif %}        
+{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+        {% for category, message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+{% endif %}
+{% endwith %}
+<a href="{{url_for('newFlight')}}" class="btn btn-primary">Add Flight</a>
+<table class="table table-striped">
+<thead>
+    <tr>
+        <th>Flight Number</th>
+        <th>Departure</th>
+        <th>Destination</th>
+        <th>Departure Date</th>
+        <th>Departure Time</th>
+        <th>Arrival Time</th>
+        <th>Price</th>
+        <th>delete</th>
+    </tr>
+</thead>
+<tbody>
+    {% for flight in flights%}
+        <tr>
+            <td>{{flight.flight_number}}</td>
+            <td>{{flight.departure}}</td>
+            <td>{{flight.destination}}</td>
+            <td>{{flight.departure_date}}</td>
+            <td>{{flight.departure_time}}</td>
+            <td>{{flight.arrival_time}}</td>
+            <td>{{flight.price}}</td>
+            <td><a href="{{url_for('deleteFlight',flight_id=flight.id)}}" class="btn btn-danger">delete</a></td>
+        </tr>
+    {% endfor %}  
+</tbody>
+</table>
+{% endblock %}

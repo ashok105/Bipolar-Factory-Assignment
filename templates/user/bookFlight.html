@@ -1,0 +1,36 @@
+{% extends 'authentication/base.html' %}
+{% block links %}
+    {% if isAdmin %}
+    {% include 'admin/navLinks.html' %}
+    {% else %}
+    {% include 'user/navLinks.html' %}
+    {% endif %}        
+{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+        {% for category, message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+{% endif %}
+{% endwith %}
+<h1 class="mt-4 text-center">Enter passenger details</h1>
+
+<form method="post" action="#" class="mb-3">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <label for="passenger_name" class="form-label">passenger_name:</label>
+            <input type="text" id="passenger_name" name="passenger_name" class="form-control" required>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-md-4">
+            <label for="seat_number" class="form-label">seat_number:</label>
+            <input type="number" id="seat_number" name="seat_number" class="form-control" min="1" max="60" required>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-md-4">
+            <button type="submit"  class="btn btn-primary mt-4">book Flight</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

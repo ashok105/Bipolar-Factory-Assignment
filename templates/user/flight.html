@@ -1,0 +1,72 @@
+{% extends 'authentication/base.html' %}
+{% block links %}
+    {% if isAdmin %}
+    {% include 'admin/navLinks.html' %}
+    {% else %}
+    {% include 'user/navLinks.html' %}
+    {% endif %}        
+{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+        {% for category, message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+{% endif %}
+{% endwith %}
+<form method="post" class="mb-3">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <label for="departure" class="form-label">Departure:</label>
+            <input type="text" id="departure" name="departure" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label for="destination" class="form-label">Destination:</label>
+            <input type="text" id="destination" name="destination" class="form-control" required>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-md-4">
+            <label for="departure_date" class="form-label">Departure Date:</label>
+            <input type="date" id="departure_date" name="departure_date" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label for="departure_date" class="form-label">Departure Time:</label>
+            <input type="time" id="departure_date" name="departure_time" class="form-control" required>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-md-4 me-auto offset-2">
+            <button type="submit"  class="btn btn-primary mt-4">Search Flights</button>
+        </div>
+    </div>
+</form>
+{% if flights %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>Departure</th>
+            <th>Destination</th>
+            <th>Departure Date</th>
+            <th>Departure Time</th>
+            <th>Arrival Time</th>
+            <th>Price</th>
+            <th>Book</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for flight in flights%}
+            <tr>
+                <td>{{flight.flight_number}}</td>
+                <td>{{flight.departure}}</td>
+                <td>{{flight.destination}}</td>
+                <td>{{flight.departure_date}}</td>
+                <td>{{flight.departure_time}}</td>
+                <td>{{flight.arrival_time}}</td>
+                <td>{{flight.price}}</td>
+                <td><a href="{{url_for('bookFlight',flight_id=flight.id)}}" class="btn btn-success">Book</a></td>
+            </tr>
+        {% endfor %}  
+    </tbody>
+</table>
+{% endif%}
+{% endblock %}

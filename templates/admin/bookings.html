@@ -1,0 +1,64 @@
+{% extends 'authentication/base.html' %}
+{% block links %}
+    {% if isAdmin %}
+    {% include 'admin/navLinks.html' %}
+    {% else %}
+    {% include 'user/navLinks.html' %}
+    {% endif %}        
+{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+        {% for category, message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+{% endif %}
+{% endwith %}
+
+<form method="post" class="mb-3">
+    <div class="row justify-content-center">
+        <div class="col-md-3">
+            <label for="departure" class="form-label">Flight No:</label>
+            <input type="text" id="departure" name="flight_no" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+            <label for="departure_date" class="form-label">Departure Date:</label>
+            <input type="date" id="departure_date" name="departure_date" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+            <label for="departure_date" class="form-label">Departure Time:</label>
+            <input type="time" id="departure_date" name="departure_time" class="form-control" required>
+        </div>
+        <div class="col-md-3 mt-2">
+            <button type="submit"  class="btn btn-primary mt-4">Search Booking</button>
+        </div>
+    </div>
+</form>
+<h1>Booked Tickets</h1>
+{% if booked_tickets %}
+<table class="table table-sm" >
+    <thead>
+        <tr >
+            <th>Flight Number</th>
+            <th>Departure Date</th>
+            <th>Departure Time</th>
+            <th>Ticket Number</th>
+            <th>Passenger Name</th>
+            <th>Seat Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for flight, ticket in booked_tickets %}
+        <tr>
+            <td>{{flight.flight_number}}</td>
+            <td>{{flight.departure_date}}</td>
+            <td>{{flight.departure_time}}</td>
+            <td>{{ ticket.ticket_number }}</td>
+            <td>{{ ticket.passenger_name }}</td>
+            <td>{{ ticket.seat_number }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}
