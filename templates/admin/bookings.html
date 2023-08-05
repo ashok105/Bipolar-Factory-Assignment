@@ -19,7 +19,15 @@
     <div class="row justify-content-center">
         <div class="col-md-3">
             <label for="departure" class="form-label">Flight No:</label>
-            <input type="text" id="departure" name="flight_no" class="form-control" required>
+            <select id="cars" name="flight_number" class="form-control" required>
+                {% for flight in flights %}
+                {% if flights and flights[0].flight_number == flight[0] %}
+                <option value="{{flight[0]}}" selected>{{flight[0]}}</option>
+                {% else %}
+                <option value="{{flight[0]}}">{{flight[0]}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
         </div>
         <div class="col-md-3">
             <label for="departure_date" class="form-label">Departure Date:</label>
@@ -60,5 +68,7 @@
         {% endfor %}
     </tbody>
 </table>
+{% else %}
+<h3>No-one Booked this Flight</h3>
 {% endif %}
 {% endblock %}

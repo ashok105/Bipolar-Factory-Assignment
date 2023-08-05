@@ -18,11 +18,27 @@
     <div class="row justify-content-center">
         <div class="col-md-4">
             <label for="departure" class="form-label">Departure:</label>
-            <input type="text" id="departure" name="departure" class="form-control" required>
+            <select id="cars" name="departure" class="form-control" required>
+                {% for departure in departures %}
+                {% if flights and flights[0].departure == departure[0] %}
+                <option value="{{departure[0]}}" selected>{{departure[0]}}</option>
+                {% else %}
+                <option value="{{departure[0]}}">{{departure[0]}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
         </div>
         <div class="col-md-4">
             <label for="destination" class="form-label">Destination:</label>
-            <input type="text" id="destination" name="destination" class="form-control" required>
+            <select id="cars" name="destination" class="form-control" required>
+                {% for destination in destinations %}
+                {% if flights and flights[0].destination == destination[0] %}
+                <option value="{{destination[0]}}" selected>{{destination[0]}}</option>
+                {% else %}
+                <option value="{{destination[0]}}">{{destination[0]}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
         </div>
         <div class="w-100"></div>
         <div class="col-md-4">
@@ -68,5 +84,7 @@
         {% endfor %}  
     </tbody>
 </table>
-{% endif%}
+{% else %}
+<h3>No Resutls Found</h3>
+{% endif %}
 {% endblock %}

@@ -15,6 +15,7 @@
 {% endif %}
 {% endwith %}
 <a href="{{url_for('newFlight')}}" class="btn btn-primary">Add Flight</a>
+{% if flights %}
 <table class="table table-striped">
 <thead>
     <tr>
@@ -43,4 +44,7 @@
     {% endfor %}  
 </tbody>
 </table>
+{% else %}
+<h3>No Resutls Found</h3>
+{% endif %}
 {% endblock %}

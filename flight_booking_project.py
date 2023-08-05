@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash,session as session_dict
 from sqlalchemy import create_engine, asc
-from sqlalchemy.orm import sessionmaker,joinedload
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 from database_setup import Base,User,Flight,BookedTickets,engine
 
 Base.metadata.bind = engine
@@ -118,11 +119,13 @@ def deleteFlight(flight_id):
 def getAllBooking():
     if session_dict.get('isAdmin') is True:
         if request.method== "POST":
-            query = session.query(Flight, BookedTickets).filter(Flight.id == BookedTickets.flight_id,Flight.flight_number==request.form['flight_no'],Flight.departure_date==request.form['departure_date'],Flight.departure_time==request.form['departure_time']).order_by(BookedTickets.seat_number.asc())
+            query = session.query(Flight, BookedTickets).filter(Flight.id == BookedTickets.flight_id,Flight.flight_number==request.form['flight_number'],Flight.departure_date==request.form['departure_date'],Flight.departure_time==request.form['departure_time']).order_by(BookedTickets.seat_number.asc())
             bookings = query.all()
-            return render_template('admin/bookings.html',booked_tickets=bookings,isAdmin=session_dict.get('isAdmin'))
+            flights=session.query(Flight.flight_number).distinct().all()
+            return render_template('admin/bookings.html',booked_tickets=bookings,flights=flights,isAdmin=session_dict.get('isAdmin'))
         else:
-            return render_template('admin/bookings.html',isAdmin=session_dict.get('isAdmin')) 
+            flights=session.query(Flight.flight_number).distinct().all()
+            return render_template('admin/bookings.html',flights=flights,isAdmin=session_dict.get('isAdmin')) 
     else:
         flash('access denied')
         return redirect(url_for('dashboard'))
@@ -132,10 +135,13 @@ def getAllFlight():
     if 'user' in session_dict:
         if request.method== "POST":
             flights = session.query(Flight).filter(Flight.departure == request.form['departure'],Flight.destination == request.form['destination'],Flight.departure_date >=request.form['departure_date']).order_by(Flight.departure_date, Flight.departure_time).all()
-            return render_template('user/flight.html',flights=flights)
+            departures=session.query(Flight.departure).distinct().all()
+            destinations=session.query(Flight.destination).distinct().all()
+            return render_template('user/flight.html',flights=flights,departures=departures,destinations=destinations)
         else:
-            flights = session.query(Flight).order_by(asc(Flight.departure_time))
-            return render_template('user/flight.html',flights=[]) 
+            departures=session.query(Flight.departure).distinct().all()
+            destinations=session.query(Flight.destination).distinct().all()
+            return render_template('user/flight.html',flights=[],departures=departures,destinations=destinations) 
     else:
         return redirect(url_for('signin'))   
     
@@ -144,6 +150,15 @@ def bookFlight(flight_id):
     if 'user' in session_dict:
         if request.method== "POST":
             flight = session.query(Flight).get(flight_id)
+            def is_seat_booked(flight_id, seat_number):
+                try:
+                    booked_ticket = session.query(BookedTickets).filter_by(flight_id=flight_id, seat_number=seat_number).one()
+                    return True 
+                except NoResultFound:
+                    return False  
+            if is_seat_booked(flight_id,request.form['seat_number']):
+                flash('seat num is already taken')
+                return render_template('user/bookFlight.html')
             ticket_number=flight.flight_number+'-'+str(flight.departure_time)+'-'+"S"+str(request.form['seat_number'])
             newBooking = BookedTickets(user_id=session_dict.get('user'),flight_id=flight_id,ticket_number=ticket_number,passenger_name=request.form['passenger_name'],seat_number=request.form['seat_number'])
             session.add(newBooking)
