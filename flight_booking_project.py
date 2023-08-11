@@ -70,6 +70,8 @@ def signup():
 @app.route('/sign-out')
 def sign_out():
     session_dict.pop('user', None)
+    if session_dict.get('isAdmin') is True:
+        session_dict.pop('isAdmin', None)
     flash('You are Signed Out successfully')
     return redirect(url_for('dashboard'))
 
